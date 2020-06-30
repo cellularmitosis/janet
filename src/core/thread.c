@@ -39,6 +39,10 @@
 #include <pthread.h>
 #endif
 
+#ifdef JANET_APPLE
+#include <AvailabilityMacros.h>
+#endif
+
 /* typedefed in janet.h */
 struct JanetMailbox {
 
@@ -234,7 +238,12 @@ static void janet_waiter_init(JanetWaiter *waiter, double sec) {
     if (waiter->timedwait) {
         /* N seconds -> timespec of (now + sec) */
         struct timespec now;
+#if defined(JANET_APPLE) && !defined(MAC_OS_X_VERSION_10_12)
+        /* clock_gettime wasn't available on Mac until 10.12. */
+        gettime(&now);
+#else
         clock_gettime(CLOCK_REALTIME, &now);
+#endif
         time_t tvsec = (time_t) floor(sec);
         long tvnsec = (long) floor(1000000000.0 * (sec - ((double) tvsec)));
         tvsec += now.tv_sec;

@@ -528,7 +528,7 @@ static int gettime(struct timespec *spec) {
     return 0;
 }
 #elif defined(__MACH__)
-static int gettime(struct timespec *spec) {
+int gettime(struct timespec *spec) {
     clock_serv_t cclock;
     mach_timespec_t mts;
     host_get_clock_service(mach_host_self(), CALENDAR_CLOCK, &cclock);
